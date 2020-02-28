@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import logo from '../logo.png';
 import './App.css';
 import Web3 from 'web3';
-
+import DaiTokenMock from "../abis/DaiTokenMock.json"
 class App extends Component {
   async componentWillMount() {
     await this.loadWeb3();
@@ -25,6 +25,8 @@ class App extends Component {
     const web3 = window.web3;
     const accounts = await web3.eth.getAccounts();
     this.setState({account: accounts[0]});
+    const daiTokenAddress = "0xD8CfA9AAA6c43d97fa5bE02c998904c70562ad17"; //Replace DAI Address here
+
     console.log(accounts);
   }
 
