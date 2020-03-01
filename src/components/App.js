@@ -31,10 +31,10 @@ class App extends Component {
     const balance = await daiTokenMock.methods.balanceOf(this.state.account).call();
     this.setState ( {balance: web3.utils.fromWei( balance.toString() , "Ether" ) }) ;
     const transactions = await daiTokenMock.getPastEvents('Transfer', { fromBlock: 0, toBlock: 'latest', filter: { from: this.state.account } });
-    this.setState({ transactions: transactions })
+    this.setState({ transactions: transactions });
     console.log(transactions)
   }
-  
+
   transfer(recipient, amount) {
     this.state.daiTokenMock.methods.transfer(recipient, amount).send({ from: this.state.account })
   }
@@ -47,6 +47,7 @@ class App extends Component {
       balance: 0,
       transactions: []
     };
+    this.transfer = this.transfer.bind(this);
   }
 
   render() {
@@ -55,11 +56,11 @@ class App extends Component {
         <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
           <a
             className="navbar-brand col-sm-3 col-md-2 mr-0"
-            href="http://www.dappuniversity.com/bootcamp"
+            href="http://www.github.com/mr-fool"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Dapp University
+            My Github
           </a>
         </nav>
         <div className="container-fluid mt-5">
@@ -67,11 +68,11 @@ class App extends Component {
             <main role="main" className="col-lg-12 d-flex text-center">
               <div className="content mr-auto ml-auto" style={{width: "400px"}}>
                 <a
-                  href="http://www.dappuniversity.com/bootcamp"
+                  href="http://www.github.com/mr-fool"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <img src={daiLogo} width="150" />
+                <img src={daiLogo} width="150" />
                 </a>
                 <h1> {this.state.balance} DAI </h1>
                
@@ -101,6 +102,25 @@ class App extends Component {
                   </div>
                   <button type="submit" className="btn btn-primary btn-block">Send</button>
                 </form>
+                
+                <table className="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Recipient</th>
+                    <th scope="col">value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  { this.state.transactions.map((tx, key) => {
+                    return (
+                      <tr key={key} >
+                        <td>{tx.returnValues.to}</td>
+                        <td>{window.web3.utils.fromWei(tx.returnValues.value.toString(), 'Ether')}</td>
+                      </tr>
+                    )
+                  }) }
+                </tbody>
+              </table>
 
               </div>
             </main>
