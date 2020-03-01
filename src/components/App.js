@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import logo from '../logo.png';
+import daiLogo from '../dai-logo.png';
 import './App.css';
 import Web3 from 'web3';
 import DaiTokenMock from "../abis/DaiTokenMock.json"
@@ -29,8 +29,10 @@ class App extends Component {
     const daiTokenMock = new web3.eth.Contract(DaiTokenMock.abi, daiTokenAddress);
     this.setState({ daiTokenMock: daiTokenMock });
     const balance = await daiTokenMock.methods.balanceOf(this.state.account).call();
-    console.log( web3.utils.fromWei( balance.toString() , "Ether" ) );
-
+    this.setState ( {balance: web3.utils.fromWei( balance.toString() , "Ether" ) }) ;
+    const transactions = await daiTokenMock.getPastEvents('Transfer', { fromBlock: 0, toBlock: 'latest', filter: { from: this.state.account } });
+    this.setState({ transactions: transactions })
+    console.log(transactions)
   }
 
   constructor(props) {
@@ -59,26 +61,43 @@ class App extends Component {
         <div className="container-fluid mt-5">
           <div className="row">
             <main role="main" className="col-lg-12 d-flex text-center">
-              <div className="content mr-auto ml-auto">
+              <div className="content mr-auto ml-auto" style={{width: "400px"}}>
                 <a
                   href="http://www.dappuniversity.com/bootcamp"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <img src={logo} className="App-logo" alt="logo" />
+                  <img src={daiLogo} width="150" />
                 </a>
-                <h1>Dapp University Starter Kit</h1>
-                <p>
-                  Edit <code>src/components/App.js</code> and save to reload.
-                </p>
-                <a
-                  className="App-link"
-                  href="http://www.dappuniversity.com/bootcamp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  LEARN BLOCKCHAIN <u><b>NOW! </b></u>
-                </a>
+                <h1> {this.state.balance} DAI </h1>
+               
+                <form onSubmit={(event) => {
+                  event.preventDefault()
+                  const recipient = this.recipient.value
+                  const amount = window.web3.utils.toWei(this.amount.value, 'Ether')
+                  this.transfer(recipient, amount)
+                }}>
+                  <div className="form-group mr-sm-2">
+                    <input
+                      id="recipient"
+                      type="text"
+                      ref={(input) => { this.recipient = input }}
+                      className="form-control"
+                      placeholder="Recipient Address"
+                      required />
+                  </div>
+                  <div className="form-group mr-sm-2">
+                    <input
+                      id="amount"
+                      type="text"
+                      ref={(input) => { this.amount = input }}
+                      className="form-control"
+                      placeholder="Amount"
+                      required />
+                  </div>
+                  <button type="submit" className="btn btn-primary btn-block">Send</button>
+                </form>
+
               </div>
             </main>
           </div>
